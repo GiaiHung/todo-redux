@@ -20,8 +20,7 @@
 // }
 
 // export default filterSlice
-
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 const filterSlice = createSlice({
     name: 'filters',
@@ -32,16 +31,15 @@ const filterSlice = createSlice({
     },
     reducers: {
         filterSearch: (state, action) => {
-            // mutation || IMMER
             state.search = action.payload
-        }, // { type: "filters/filterSearch" }
+        },
         filterStatus: (state, action) => {
             state.status = action.payload
         },
         filterPriorities: (state, action) => {
             state.priorities = action.payload
         }
-    } 
+    }
 })
 
 export default filterSlice

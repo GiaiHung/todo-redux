@@ -1,83 +1,65 @@
-import { useState } from 'react';
 import { useDispatch } from 'react-redux'
-import filterSlice from './FilterSlice';
-import { Col, Row, Input, Typography, Radio, Select, Tag } from 'antd';
+import { Col, Row, Input, Select, Typography, Radio, Tag } from 'antd'
+import filterSlice from './filterSlice'
 
-const { Search } = Input;
+const { Paragraph } = Typography
+const { Search } = Input
+const { Option } = Select
 
 export default function Filters() {
-    const [search, setSearch] = useState('')
-    const [status, setStatus] = useState('All')
-    const [priorities, setPriorities] = useState([])
+    const dispatch= useDispatch()
 
-    const dispatch = useDispatch()
-
-    const handleSearchText = (e) => {
-        setSearch(e.target.value)
+    const handleFilterSearch = (e) => {
         dispatch(filterSlice.actions.filterSearch(e.target.value))
     }
 
-    const handleFilterStatus = (e) => {
-        setStatus(e.target.value)
+    const handleStatus = (e) => {
         dispatch(filterSlice.actions.filterStatus(e.target.value))
     }
 
     const handleFilterPriorities = (value) => {
-        setPriorities(value)
         dispatch(filterSlice.actions.filterPriorities(value))
     }
 
     return (
-        <Row justify='center'>
+        <Row justify='center' style={{ margin: '1rem 0' }}>
             <Col span={24}>
-                <Typography.Paragraph
-                    style={{ fontWeight: 'bold', marginBottom: 3, marginTop: 10 }}
-                >
-                    Search
-                </Typography.Paragraph>
+                <Paragraph style={{ fontWeight: 'bold' }}>Search</Paragraph>
                 <Search
-                    placeholder='input search text'
-                    value={search}
-                    onChange={handleSearchText}
+                    placeholder='Search todos...'
+                    onChange={handleFilterSearch}
                 />
             </Col>
-            <Col sm={24}>
-                <Typography.Paragraph
-                    style={{ fontWeight: 'bold', marginBottom: 3, marginTop: 10 }}
-                >
-                    Filter By Status
-                </Typography.Paragraph>
-                <Radio.Group value={status} onChange={handleFilterStatus}>
+
+            <Col span={24}>
+                <Paragraph style={{ fontWeight: 'bold', marginTop: '1rem' }}>Filter By Status</Paragraph>
+                <Radio.Group defaultValue={'All'} onChange={handleStatus}>
                     <Radio value='All'>All</Radio>
                     <Radio value='Completed'>Completed</Radio>
-                    <Radio value='Todo'>To do</Radio>
+                    <Radio value='Todo'>Todo</Radio>
                 </Radio.Group>
             </Col>
-            <Col sm={24}>
-                <Typography.Paragraph
-                    style={{ fontWeight: 'bold', marginBottom: 3, marginTop: 10 }}
-                >
-                    Filter By Priority
-                </Typography.Paragraph>
+
+            <Col span={24}>
+                <Paragraph style={{ fontWeight: 'bold', margin: '1rem auto' }}>Filter By Priority</Paragraph>
                 <Select
                     mode='multiple'
                     allowClear
                     placeholder='Please select'
                     style={{ width: '100%' }}
-                    value={priorities}
                     onChange={handleFilterPriorities}
                 >
-                    <Select.Option value='High' label='High'>
+                    <Option value='High' label='High'>
                         <Tag color='red'>High</Tag>
-                    </Select.Option>
-                    <Select.Option value='Medium' label='Medium'>
-                        <Tag color='blue'>Medium</Tag>
-                    </Select.Option>
-                    <Select.Option value='Low' label='Low'>
+                    </Option>
+                    <Option value='Medium' label='Medium'>
+                        <Tag color='green'>Medium</Tag>
+                    </Option>
+                    <Option value='Low' label='Low'>
                         <Tag color='gray'>Low</Tag>
-                    </Select.Option>
+                    </Option>
                 </Select>
             </Col>
         </Row>
-    );
+    )
 }

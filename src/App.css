@@ -1,4 +1,4 @@
-@import '~antd/dist/antd.css';
+@import "~antd/dist/antd.css";
 
 body {
   overflow: hidden;
@@ -6,4 +6,15 @@ body {
 
 .ant-select-multiple .ant-select-selection-item {
   height: 27px;
+}
+
+.container {
+  margin: 2rem auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  width: max-content;
+  max-width: 450px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 }

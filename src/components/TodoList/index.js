@@ -1,30 +1,31 @@
-import { useState, useRef } from 'react';
-import { Col, Row, Input, Button, Select, Tag } from 'antd';
-import Todo from '../Todo';
-import { useDispatch, useSelector } from 'react-redux';
-import todoListSlice from './TodoListSlice'
+import React, { useState, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Row, Col, Input, Select, Button, Tag } from 'antd'
+import todoListSlice from './todoListSlice'
 import { v4 as uuidv4 } from 'uuid'
+import Todo from '../Todo'
+
+const { Group } = Input
+const { Option } = Select
 
 export default function TodoList() {
     const [input, setInput] = useState('')
     const [priority, setPriority] = useState('Medium')
-    const search = useSelector((state) => state.filters.search)
-    const priorities = useSelector((state) => state.filters.priorities)
-    const todoList = useSelector((state) => state.todoList
-        .filter(todo => {
-            if (state.filters.status === 'All') {
-                return priorities.length
-                    ? todo.name.toLowerCase().includes(search.toLowerCase()) && priorities.includes(todo.priority)
-                    : todo.name.toLowerCase().includes(search.toLowerCase())
-            }
+    const inputRef = useRef()
 
-            return (
-                todo.name.toLowerCase().includes(search.toLowerCase()) &&
-                (state.filters.status === 'Completed' ? todo.completed : !todo.completed) &&
-                (priorities.length ? priorities.includes(todo.priority) : true)
-            )
-        }))
-    const inputFocus = useRef()
+    // Filter
+    const search = useSelector(state => state.filters.search)
+    const status = useSelector(state => state.filters.status)
+    const priorities = useSelector(state => state.filters.priorities)
+    const todoList = useSelector((state) => {
+        return state.todoList
+            .filter(todo => todo.name.toLowerCase().includes(search.toLowerCase()))
+            .filter(todo => {
+                if (status === 'All') return true
+                return status === 'Completed' ? todo.completed : !todo.completed
+            })
+            .filter(todo => priorities.length ? priorities.includes(todo.priority) : true)
+    })
 
     const dispatch = useDispatch()
 
@@ -33,54 +34,48 @@ export default function TodoList() {
             id: uuidv4(),
             name: input,
             priority: priority,
-            completed: false
+            completed: false,
         }))
         setInput('')
         setPriority('Medium')
-        inputFocus.current.focus()
-    }
-
-    const handleInput = (e) => {
-        setInput(e.target.value)
-    }
-
-    const handlePriority = (value) => {
-        setPriority(value)
+        inputRef.current.focus()
     }
 
     return (
-        <Row style={{ height: 'calc(100% - 40px)' }}>
-            <Col span={24} style={{ height: 'calc(100% - 40px)', overflowY: 'auto' }}>
+        <Row style={{ height: 'calc(100% -40px)' }}>
+            <Col span={24} style={{ height: '150px', overflowY: 'auto', padding: 3 }}>
                 {
-                    todoList.map((todo) => (
-                        <Todo
-                            name={todo.name}
-                            priority={todo.priority}
-                            completed={todo.completed}
-                            key={todo.id}
-                            id={todo.id} />
-                    ))
+                    todoList.length ? todoList.map(todo => {
+                        const { id, name, priority, completed } = todo
+                        return (
+                            <Todo
+                                id={id}
+                                key={id}
+                                name={name}
+                                priority={priority}
+                                completed={completed}
+                            /> 
+                        )
+                    }) : <h1>No task to be done!!</h1>
                 }
             </Col>
-            <Col span={24}>
-                <Input.Group style={{ display: 'flex' }} compact>
-                    <Input value={input} onChange={handleInput} ref={inputFocus} />
-                    <Select defaultValue="Medium" value={priority} onChange={handlePriority}>
-                        <Select.Option value='High' label='High'>
+            <Col span={24} style={{ marginTop: '2rem' }}>
+                <Group style={{ display: 'flex', width: '100%' }} compact>
+                    <Input value={input} onChange={e => setInput(e.target.value)} ref={inputRef} />
+                    <Select defaultValue='Medium' value={priority} onChange={value => setPriority(value)}>
+                        <Option value='High' label='High'>
                             <Tag color='red'>High</Tag>
-                        </Select.Option>
-                        <Select.Option value='Medium' label='Medium'>
-                            <Tag color='blue'>Medium</Tag>
-                        </Select.Option>
-                        <Select.Option value='Low' label='Low'>
-                            <Tag color='gray'>Low</Tag>
-                        </Select.Option>
+                        </Option>
+                        <Option value='Medium' label='Medium'>
+                            <Tag color='green'>Medium</Tag>
+                        </Option>
+                        <Option value='Low' label='Low'>
+                            <Tag color='grey'>Low</Tag>
+                        </Option>
                     </Select>
-                    <Button type='primary' onClick={handleAddTodo}>
-                        Add
-                    </Button>
-                </Input.Group>
+                    <Button type='primary' onClick={handleAddTodo}>Add</Button>
+                </Group>
             </Col>
         </Row>
-    );
+    )
 }
